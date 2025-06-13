@@ -15,14 +15,16 @@ export class BankDetailService {
     private readonly userRepo: Repository<User>,
   ) {}
 
-  async createBankDetail(dto: CreateBankDetailDto): Promise<BankDetail> {
-    const users = await this.userRepo.findByIds(dto.userIds);
+  async createBankDetail(
+    createBankDetailDto: CreateBankDetailDto,
+  ): Promise<BankDetail> {
+    const users = await this.userRepo.findByIds(createBankDetailDto.userIds);
     if (users.length === 0) {
       throw new Error('Aucun utilisateur trouvé');
     }
     const bankDetail = this.bankDetailRepo.create({
-      bankName: dto.bankName,
-      accountNumber: dto.accountNumber,
+      bankName: createBankDetailDto.bankName,
+      accountNumber: createBankDetailDto.accountNumber,
       users,
     });
     return await this.bankDetailRepo.save(bankDetail);

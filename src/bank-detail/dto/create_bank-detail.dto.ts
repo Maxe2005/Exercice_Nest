@@ -1,15 +1,19 @@
 import { IsString, IsNotEmpty, IsArray, IsNumber } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateBankDetailDto {
   @IsString()
   @IsNotEmpty()
-  bankName: string;
+  @ApiProperty()
+  readonly bankName: string;
 
   @IsString()
   @IsNotEmpty()
-  accountNumber: string;
+  @ApiProperty()
+  readonly accountNumber: string;
 
   @IsArray()
   @IsNumber({}, { each: true })
-  userIds: number[];
+  @ApiProperty()
+  readonly userIds: number[];
 }
