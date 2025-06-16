@@ -2,16 +2,32 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './model/user.entity';
-//import { CreateUserDto } from './dto/create_user.dto';
-import { CrudService } from '../crud/crud.service';
+import { CreateUserDto } from './dto/create_user.dto';
+import { UpdateUserDto } from './dto/update_user.dto';
 
 @Injectable()
-export class UserService extends CrudService<User> {
-  constructor(@InjectRepository(User) readonly userRepo: Repository<User>) {
-    super(userRepo);
-  }
+export class UserService {
+  constructor(@InjectRepository(User) readonly userRepo: Repository<User>) {}
 
   async findOneByEmail(email: string): Promise<User | null> {
-    return await this.userRepo.findOne({ where: { email } });
+    return await this.userRepo.findOne({ where: { email: email } });
+  }
+
+  findAll(): Promise<User[]> {
+    return this.userRepo.find();
+  }
+
+  create(createUserDto: CreateUserDto): Promise<User> {
+    const user = this.userRepo.create(createUserDto);
+    return this.userRepo.save(user);
+  }
+
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User | null> {
+    const user = await this.userRepo.findOne({ where: { id: id } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+    await this.userRepo.update(user.id, updateUserDto);
+    return await this.userRepo.findOne({ where: { id: user.id } });
   }
 }

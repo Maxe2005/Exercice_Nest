@@ -6,8 +6,6 @@ import { typeOrmConfig } from 'src/typeorm.config';
 import { BankDetailModule } from './bank-detail/bank-detail.module';
 import { StudentDetailModule } from './student-detail/student-detail.module';
 import { ConfigModule } from '@nestjs/config';
-import { CrudService } from './crud/crud.service';
-import { BaseController } from './crud/crud.controller';
 
 @Module({
   imports: [
@@ -21,8 +19,5 @@ import { BaseController } from './crud/crud.controller';
       isGlobal: true,
     }),
   ],
-  providers: [CrudService],
-  controllers: [BaseController],
-  exports: [CrudService],
 })
 export class AppModule {}
