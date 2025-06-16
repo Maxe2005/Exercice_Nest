@@ -6,12 +6,15 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { BaseController } from 'src/crud/crud.controller';
 
 @ApiTags('users')
 @Controller('users')
 @UseGuards(JwtAuthGuard, RolesGuard)
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class UserController extends BaseController<User> {
+  constructor(private readonly userService: UserService) {
+    super(userService);
+  }
 
   @Get()
   @Roles('ADMIN_IANORD')
