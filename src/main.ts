@@ -14,7 +14,16 @@ async function bootstrap() {
       'Documentation de l’API pour le projet Exercice Backend - Systèmed’Authentification avec Rôles et Relations',
     )
     .setVersion('1.0')
-    .addBearerAuth() // Pour tester les routes protégées avec JWT
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'Authorization',
+        in: 'header',
+      },
+      'access-token', // <- Le nom du "security scheme"
+    ) // Pour tester les routes protégées avec JWT
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
