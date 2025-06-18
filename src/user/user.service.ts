@@ -14,6 +14,14 @@ export class UserService {
     return await this.userRepo.findOne({ where: { email: email } });
   }
 
+  async findOneById(id: number): Promise<User | null> {
+    return await this.userRepo.findOne({ where: { id: id } });
+  }
+
+  async findOneByName(name: string): Promise<User | null> {
+    return await this.userRepo.findOne({ where: { name: name } });
+  }
+
   findAll(): Promise<User[]> {
     return this.userRepo.find();
   }
@@ -38,5 +46,26 @@ export class UserService {
     }
     await this.userRepo.update(user.id, updateUserDto);
     return await this.userRepo.findOne({ where: { id: user.id } });
+  }
+
+  async paginateUsers(page: number, limit: number) {
+    const [users, total] = await this.userRepo.findAndCount({
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      data: users,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async getUsersWithRelations() {
+    return this.userRepo.find({
+      relations: ['studentDetail', 'bankDetails'],
+    });
   }
 }

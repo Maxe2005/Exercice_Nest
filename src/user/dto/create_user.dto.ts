@@ -1,5 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '../../auth/role.enum';
 
 export class CreateUserDto {
   @IsString()
@@ -26,4 +27,10 @@ export class CreateUserDto {
     description: 'Mot de passe (min 6 caractères)',
   })
   readonly password: string;
+
+  @ApiProperty({
+    example: 'GESTIONNAIRE',
+    description: 'Rôle de l’utilisateur (par défaut : USER)',
+  })
+  readonly role: Role[] = [Role.USER];
 }

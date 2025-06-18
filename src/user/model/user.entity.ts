@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { StudentDetail } from '../../student-detail/model/student-detail.entity';
 import { BankDetail } from '../../bank-detail/model/bank-detail.entity';
+import { Role } from '../../auth/role.enum';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -21,6 +22,9 @@ export class User {
 
   @Column()
   email: string;
+
+  @Column('text', { array: true, default: ['USER'] })
+  role: Role[];
 
   @OneToOne(() => StudentDetail, (detail) => detail.user)
   studentDetail: StudentDetail;

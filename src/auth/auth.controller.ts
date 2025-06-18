@@ -7,7 +7,6 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
