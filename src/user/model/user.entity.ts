@@ -6,6 +6,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { StudentDetail } from '../../student-detail/model/student-detail.entity';
 import { BankDetail } from '../../bank-detail/model/bank-detail.entity';
 import { Role } from '../../auth/role.enum';
@@ -18,6 +19,7 @@ export class User {
   name: string;
 
   @Column()
+  @Exclude() // 👈 ne sera pas retourné lors de la transformation
   password: string;
 
   @Column()

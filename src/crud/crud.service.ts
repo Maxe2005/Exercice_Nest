@@ -1,3 +1,7 @@
+/*
+Non fonctionnel, état d'experimentation
+*/
+
 import { Injectable } from '@nestjs/common';
 import {
   Repository,
@@ -6,7 +10,6 @@ import {
   FindOneOptions,
   ObjectLiteral,
 } from 'typeorm';
-//import { BaseEntity } from 'src/base.entity';
 
 @Injectable()
 export class CrudService<T extends ObjectLiteral> {
@@ -21,7 +24,10 @@ export class CrudService<T extends ObjectLiteral> {
     return await this.repository.find(options);
   }
 
-  async findOneBy(options: FindOneOptions<T>, isError: boolean): Promise<T | null> {
+  async findOneBy(
+    options: FindOneOptions<T>,
+    isError: boolean,
+  ): Promise<T | null> {
     const user = await this.repository.findOne({
       where: options.where,
     });
@@ -35,11 +41,14 @@ export class CrudService<T extends ObjectLiteral> {
   }
 
   async update(id: number, updateDto: DeepPartial<T>): Promise<T | null> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const user = await this.findOneBy({ where: { id: id as any } }, true);
     if (!user) {
       throw new Error('User not found');
     }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     await this.repository.update(id, updateDto as any);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return this.findOneBy({ where: { id: id as any } }, false);
   }
 

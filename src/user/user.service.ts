@@ -23,7 +23,7 @@ export class UserService {
   }
 
   findAll(): Promise<User[]> {
-    return this.userRepo.find();
+    return this.userRepo.find(); //DRY
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -61,11 +61,11 @@ export class UserService {
       limit,
       totalPages: Math.ceil(total / limit),
     };
-  }
+  } //DRY
 
   async getUsersWithRelations() {
     return this.userRepo.find({
       relations: ['studentDetail', 'bankDetails'],
     });
-  }
+  } // DRY
 }
