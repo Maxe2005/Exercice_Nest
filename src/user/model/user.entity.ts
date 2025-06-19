@@ -6,8 +6,10 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { StudentDetail } from '../../student-detail/model/student-detail.entity';
 import { BankDetail } from '../../bank-detail/model/bank-detail.entity';
+import { Role } from '../../auth/role.enum';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -16,11 +18,15 @@ export class User {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
+  @Column()
+  @Exclude() // 👈 ne sera pas retourné lors de la transformation
   password: string;
 
   @Column()
   email: string;
+
+  @Column('text', { array: true, default: ['USER'] })
+  role: Role[];
 
   @OneToOne(() => StudentDetail, (detail) => detail.user)
   studentDetail: StudentDetail;

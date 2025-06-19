@@ -16,13 +16,15 @@ export class StudentDetailService {
   ) {}
 
   async createStudentDetail(
-    dto: CreateStudentDetailDto,
+    createStudentDetailDto: CreateStudentDetailDto,
   ): Promise<StudentDetail> {
-    const user = await this.userRepo.findOneBy({ id: dto.userId });
+    const user = await this.userRepo.findOneBy({
+      id: createStudentDetailDto.userId,
+    });
     if (!user) throw new Error('User not found');
 
     const detail = this.studentDetailRepo.create({
-      studentIdNumber: dto.studentIdNumber,
+      studentIdNumber: createStudentDetailDto.studentIdNumber,
       user,
     });
 
