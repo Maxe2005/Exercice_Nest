@@ -1,18 +1,32 @@
-import { Controller, Body, Post, HttpException } from '@nestjs/common';
-import { AuthPayloadDto } from './dto/auth.dto';
+import { Controller, Post, Get, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Request } from 'express';
-import { AuthGuard } from '@nestjs/passport';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { Public } from './decorators/public.decorator';
+import { ApiBody, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { AuthDto } from './dto/auth.dto';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
-  /*
+
+  @Public()
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  @UseGuards(AuthGuard('local'))
-  login(@Request() req: Request, @Body() authPayload: AuthPayloadDto) {
-    const user = this.authService.validateUser(authPayload);
-    if (!user) throw new HttpException('Invalid credentials', 401);
-    return user;
+  @ApiBody({ type: AuthDto })
+  async login(@Request() req) {
+    return this.authService.login(req.user);
+  }
+
+  @ApiBearerAuth('access-token')
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
+  }
+  /*
+  async login(@Body() body: { email: string; password: string }) {
+    const user = await this.authService.validateUser(body.email, body.password);
+    if (!user) throw new UnauthorizedException('Invalid credentials');
+    return this.authService.login(user);
   }*/
 }
