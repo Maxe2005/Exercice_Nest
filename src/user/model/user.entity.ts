@@ -18,6 +18,9 @@ export class User {
   @Column()
   name: string;
 
+  @Column({ default: 'Le PNJ' })
+  firstname: string;
+
   @Column()
   @Exclude() // 👈 ne sera pas retourné lors de la transformation
   password: string;

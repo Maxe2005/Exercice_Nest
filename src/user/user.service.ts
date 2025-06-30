@@ -1,10 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, FindOptionsWhere, FindManyOptions } from 'typeorm';
 import { User } from './model/user.entity';
 import { CreateUserDto } from './dto/create_user.dto';
 import { UpdateUserDto } from './dto/update_user.dto';
 import * as bcrypt from 'bcrypt';
+import { UserFilterDto } from './dto/user_filter.dto'; // À créer si non existant
+
+export interface FindUserOptions {
+  select?: (keyof User)[];
+  relations?: string[];
+  skip?: number;
+  take?: number;
+}
 
 @Injectable()
 export class UserService {
@@ -22,8 +30,19 @@ export class UserService {
     return await this.userRepo.findOne({ where: { name: name } });
   }
 
-  findAll(): Promise<User[]> {
-    return this.userRepo.find(); //DRY
+  async findAll(
+    filterDto?: UserFilterDto,
+    options?: FindUserOptions,
+  ): Promise<User[]> {
+    const where = filterDto ? this.createUserFilterConditions(filterDto) : {};
+    const findOptions: FindManyOptions<User> = {
+      where,
+      select: options?.select,
+      relations: options?.relations,
+      skip: options?.skip,
+      take: options?.take,
+    };
+    return this.userRepo.find(findOptions);
   }
 
   async create(createUserDto: CreateUserDto) {
@@ -40,7 +59,7 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User | null> {
-    const user = await this.userRepo.findOne({ where: { id: id } });
+    const user = await this.userRepo.findOne({ where: { id } });
     if (!user) {
       throw new Error('User not found');
     }
@@ -48,8 +67,17 @@ export class UserService {
     return await this.userRepo.findOne({ where: { id: user.id } });
   }
 
-  async paginateUsers(page: number, limit: number) {
+  async paginate(
+    filterDto: UserFilterDto,
+    page: number,
+    limit: number,
+    options?: FindUserOptions,
+  ) {
+    const where = this.createUserFilterConditions(filterDto);
     const [users, total] = await this.userRepo.findAndCount({
+      where,
+      select: options?.select,
+      relations: options?.relations,
       skip: (page - 1) * limit,
       take: limit,
     });
@@ -61,11 +89,21 @@ export class UserService {
       limit,
       totalPages: Math.ceil(total / limit),
     };
-  } //DRY
+  }
 
-  async getUsersWithRelations() {
-    return this.userRepo.find({
-      relations: ['studentDetail', 'bankDetails'],
-    });
-  } // DRY
+  async findAllWithRelations(relations: string[] = []) {
+    return this.userRepo.find({ relations });
+  }
+
+  // Méthode privée pour construire les conditions de filtre
+  private createUserFilterConditions(
+    filterDto: UserFilterDto,
+  ): FindOptionsWhere<User> {
+    const where: FindOptionsWhere<User> = {};
+    if (filterDto.email) where.email = filterDto.email;
+    if (filterDto.name) where.name = filterDto.name;
+    if (filterDto.id) where.id = filterDto.id;
+    // Ajouter d'autres filtres selon UserFilterDto
+    return where;
+  }
 }
